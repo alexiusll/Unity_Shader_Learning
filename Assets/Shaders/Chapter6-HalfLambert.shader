@@ -1,6 +1,4 @@
-﻿// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
-
-Shader "Custom/Chapter6/DiffuseVertexLevel"
+﻿Shader "Custom/Chapter6/HalfLambert"
 {
     Properties
     {
@@ -27,7 +25,7 @@ Shader "Custom/Chapter6/DiffuseVertexLevel"
 
             struct v2f{
                 float4 pos : SV_POSITION;
-                fixed3 color : COLOR;
+                fixed3 worldNormal : TEXCOORD0;
             };
 
             v2f vert(a2v v){
@@ -36,30 +34,36 @@ Shader "Custom/Chapter6/DiffuseVertexLevel"
                 // 顶点位置 从 模型空间 转换到 剪裁空间
                 o.pos = UnityObjectToClipPos(v.vertex);
 
-                // ------计算漫反射光照部分------
-                // 本节假设场景中只有一个类型的光源 -》 平行光
-
-                // 计算环境光 内置变量UNITY_LIGHTMODEL_AMBIENT得到环境光
-                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
-
-                // 转换 法线 从对象空间到世界空间
-                fixed3 worldNormal = normalize(mul(v.normal,(float3x3)unity_WorldToObject));
-                // 得到 光线 在世界空间的方向
-                fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
-
-                // 计算 漫反射
-                // _LightColor0 光源的颜色和强度信息
-                // dot() 是点集
-                // saturate() 函数的作用是把参数截取到[0,1]的范围内
-                fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal,worldLight));
-
-                o.color = ambient + diffuse;
+                 // 转换 法线 从对象空间到世界空间
+                o.worldNormal = mul(v.normal,(float3x3)unity_WorldToObject);
 
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target {
-                return fixed4(i.color , 1.0);
+
+                 // ------计算漫反射光照部分------
+                // 本节假设场景中只有一个类型的光源 -》 平行光
+
+                // 计算环境光 内置变量UNITY_LIGHTMODEL_AMBIENT得到环境光
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+               
+                // 得到 光线 在世界空间的方向
+                fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
+
+                fixed3 worldNormal = normalize(i.worldNormal);
+
+                // 计算 漫反射
+                // _LightColor0 光源的颜色和强度信息
+                // dot() 是点集
+
+                // 半兰伯特模型
+                fixed3 halfLambert = dot(worldNormal,worldLight) * 0.5 + 0.5;
+                fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * halfLambert;
+
+                fixed3 color = ambient + diffuse;
+
+                return fixed4(color , 1.0);
             }
 
             ENDCG
