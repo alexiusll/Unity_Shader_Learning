@@ -69,7 +69,7 @@
 
                 // ------计算镜面反射光照部分------
                 // 获得反射的光线方向
-                fixed3 reflectDir = normalize(reflect(-worldLightDir , worldNormal));
+                // fixed3 reflectDir = normalize(reflect(-worldLightDir , worldNormal));
                 // 获得 世界空间下 视点的方向
                 // fixed3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos);
                 fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
