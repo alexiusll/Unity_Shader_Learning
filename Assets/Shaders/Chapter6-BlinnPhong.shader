@@ -16,7 +16,10 @@
 
             #pragma vertex vert
             #pragma fragment frag
-            #include "Lighting.cginc"
+
+            // #include "Lighting.cginc"
+			#include "UnityCG.cginc"
+			#include "UnityLightingCommon.cginc"
 
             fixed4 _Diffuse;
             fixed4 _Specular;

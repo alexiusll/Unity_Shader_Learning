@@ -9,14 +9,12 @@ Shader "Custom/test"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        // Tags { "RenderType"="Opaque" }
         LOD 200
 
-		Cull Front
-		
+		// Cull Front
 		// ZWrite Off
-
-		ZTest Always
+		// ZTest Always
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
